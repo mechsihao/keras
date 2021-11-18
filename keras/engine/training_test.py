@@ -91,6 +91,27 @@ class TrainingTest(keras_parameterized.TestCase):
       model.fit(x=np.array([]), y=np.array([]))
 
   @keras_parameterized.run_all_keras_modes(always_skip_v1=True)
+  def test_compile_fit_with_jit_compile(self):
+    # Test with jit_compile = True
+    model = sequential.Sequential([layers_module.Dense(1)])
+    model.compile(
+        'sgd',
+        loss='mse',
+        run_eagerly=testing_utils.should_run_eagerly(),
+        jit_compile=True)
+    x, y = np.ones((10, 1)), np.ones((10, 1))
+    model.fit(x, y, epochs=2)
+    # Test with jit_compile = False
+    model = sequential.Sequential([layers_module.Dense(1)])
+    model.compile(
+        'sgd',
+        loss='mse',
+        run_eagerly=testing_utils.should_run_eagerly(),
+        jit_compile=False)
+    x, y = np.ones((10, 1)), np.ones((10, 1))
+    model.fit(x, y, epochs=2)
+
+  @keras_parameterized.run_all_keras_modes(always_skip_v1=True)
   def test_fit_without_loss_at_compile(self):
     model = sequential.Sequential([layers_module.Dense(1)])
     model.compile('sgd', run_eagerly=testing_utils.should_run_eagerly())
